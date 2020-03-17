@@ -49,14 +49,14 @@ class Pico
      *
      * @var string
      */
-    const VERSION = '2.1.0';
+    const VERSION = '2.1.1';
 
     /**
      * Pico version ID
      *
      * @var int
      */
-    const VERSION_ID = 20100;
+    const VERSION_ID = 20101;
 
     /**
      * Pico API version
@@ -455,8 +455,9 @@ class Pico
         // load raw file content
         $this->triggerEvent('onContentLoading');
 
+        $requestedPageId = $this->getPageId($this->requestFile) ?: $this->requestFile;
         $hiddenFileRegex = '/(?:^|\/)(?:_|404' . preg_quote($this->getConfig('content_ext'), '/') . '$)/';
-        if (is_file($this->requestFile) && !preg_match($hiddenFileRegex, $this->requestFile)) {
+        if (is_file($this->requestFile) && !preg_match($hiddenFileRegex, $requestedPageId)) {
             $this->rawContent = $this->loadFileContent($this->requestFile);
         } else {
             $this->triggerEvent('on404ContentLoading');
@@ -2330,14 +2331,12 @@ class Pico
     {
         $contentDir = $this->getConfig('content_dir');
         $contentDirLength = strlen($contentDir);
-
         if (substr($path, 0, $contentDirLength) !== $contentDir) {
             return null;
         }
 
         $contentExt = $this->getConfig('content_ext');
         $contentExtLength = strlen($contentExt);
-
         if (substr($path, -$contentExtLength) !== $contentExt) {
             return null;
         }
